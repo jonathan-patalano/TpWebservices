@@ -1,0 +1,345 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "Mise en place d'une application bancaire simplifiée :",
+    "version" : "1.0.0",
+    "title" : "Swagger Bank",
+    "termsOfService" : "http://swagger.io/terms/",
+    "contact" : {
+      "email" : "jonathan.patalano@ynov.com"
+    },
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host" : "petstore.swagger.io",
+  "basePath" : "/v2",
+  "tags" : [ {
+    "name" : "user",
+    "description" : "Liste d'opérations sur les utilisateurs"
+  } ],
+  "schemes" : [ "https", "http" ],
+  "paths" : {
+    "/user" : {
+      "post" : {
+        "tags" : [ "user" ],
+        "summary" : "Création d'un utilisateur",
+        "description" : "",
+        "operationId" : "createUser",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Création d'un objet utilisateur",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/User"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Un utilisateur à été ajouté, on renvoie un numero de compte ainsi qu'un code pin qui lui serviront à se connecter plus tard.",
+            "schema" : {
+              "$ref" : "#/definitions/inline_response_200"
+            }
+          },
+          "400" : {
+            "description" : "Un des champs renseignés n'est pas valide, attention à respecter le type/format des champs."
+          }
+        }
+      }
+    },
+    "/user/login" : {
+      "get" : {
+        "tags" : [ "user" ],
+        "summary" : "Authentification d'un utilisateur dans le système",
+        "description" : "Permet à un utilisateur de se connecter à son espace client.",
+        "operationId" : "loginUser",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "AccountNumber",
+          "in" : "query",
+          "description" : "Numéro du compte utilisateur.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "CodePin",
+          "in" : "query",
+          "description" : "Code pin qui servira de mot de passe.",
+          "required" : true,
+          "type" : "integer"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "L'utilisateur est bien connecté, une session authentifié avec JWT est créé."
+          },
+          "400" : {
+            "description" : "Combinaison Numéro de compte / CodePin erroné"
+          }
+        },
+        "security" : [ {
+          "JWT" : [ ]
+        } ]
+      }
+    },
+    "/user/logout" : {
+      "get" : {
+        "tags" : [ "user" ],
+        "summary" : "Déconnexion de la session de l'utilisateur en cours.",
+        "description" : "",
+        "operationId" : "logoutUser",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "L'utilisateur est déconnecté, sa session est éffacer"
+          },
+          "400" : {
+            "description" : "Déconnexion impossible"
+          }
+        }
+      }
+    },
+    "/user/{Id}" : {
+      "get" : {
+        "tags" : [ "user" ],
+        "summary" : "Récuperation d'un utilisateur par son identifiant",
+        "description" : "",
+        "operationId" : "getUserById",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "Id",
+          "in" : "path",
+          "description" : "On cherche un utilisateur par son identifiant",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Un utilisateur à été trouvé",
+            "schema" : {
+              "$ref" : "#/definitions/User"
+            }
+          },
+          "400" : {
+            "description" : "Id invalide"
+          },
+          "404" : {
+            "description" : "Utilisateur introuvable"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "user" ],
+        "summary" : "Modification d'un utilisateur",
+        "description" : "Ceci ne peut être fait que par l'utilisateur connecté.",
+        "operationId" : "updateUser",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "Id",
+          "in" : "path",
+          "description" : "Modification d'un utilisateur par son Identifiant",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Mise à jour de l'objet utilisateur",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/User"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "L'utilisateur à été mise à jour"
+          },
+          "400" : {
+            "description" : "Identifiant invalide"
+          },
+          "404" : {
+            "description" : "L'utilisateur est introuvable"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "user" ],
+        "summary" : "Suppression d'un utilisateur",
+        "description" : "Ceci ne peut être fait que par l'utilisateur connecté.",
+        "operationId" : "deleteUser",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "Id",
+          "in" : "path",
+          "description" : "Modification d'un utilisateur par son Identifiant",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Utilisateur supprimé"
+          },
+          "400" : {
+            "description" : "Identifiant invalide"
+          },
+          "404" : {
+            "description" : "Utilisateur introuvable"
+          }
+        }
+      }
+    },
+    "/user/cash" : {
+      "post" : {
+        "tags" : [ "user" ],
+        "summary" : "Dépôt et retrait d'argent",
+        "description" : "Permet à un utilisateur d'indiquer le montant qu'il veut retirer ou déposer",
+        "operationId" : "cashUser",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "AccountNumber",
+          "in" : "query",
+          "description" : "Numéro du compte utilisateur.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "Date",
+          "in" : "query",
+          "description" : "Date effective du dépôt/retrait d'argent.",
+          "required" : true,
+          "type" : "integer"
+        }, {
+          "name" : "Amount",
+          "in" : "query",
+          "description" : "Montant de la transaction.",
+          "required" : true,
+          "type" : "integer"
+        }, {
+          "name" : "Type",
+          "in" : "query",
+          "description" : "Type de la transaction Dépôt || Retrait.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "La transaction à bien été effectuer"
+          },
+          "400" : {
+            "description" : "Transaction impossible"
+          }
+        }
+      }
+    },
+    "/user/transfer" : {
+      "post" : {
+        "tags" : [ "user" ],
+        "summary" : "Virement d'argent",
+        "description" : "Permet à un utilisateur de virer le montant qu'il veut transferer sur ",
+        "operationId" : "TransferUser",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "AccountNumber",
+          "in" : "query",
+          "description" : "Numéro du compte utilisateur.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "RecipientAccountNumber",
+          "in" : "query",
+          "description" : "Numéro du compte de l'utilisateur destinataire.",
+          "required" : true,
+          "type" : "number"
+        }, {
+          "name" : "Date",
+          "in" : "query",
+          "description" : "Date effective du dépôt/retrait d'argent.",
+          "required" : true,
+          "type" : "integer"
+        }, {
+          "name" : "Amount",
+          "in" : "query",
+          "description" : "Montant de la transaction.",
+          "required" : true,
+          "type" : "integer"
+        }, {
+          "name" : "Type",
+          "in" : "query",
+          "description" : "Type de la transaction Dépôt || Retrait.",
+          "required" : true,
+          "type" : "number"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "le virement est effectué et on retourne à l'utilisateur un simple message de confirmation."
+          },
+          "400" : {
+            "description" : "Transaction impossible"
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions" : {
+    "JWT" : {
+      "description" : "Service d'authentification",
+      "type" : "apiKey",
+      "name" : "Authorization",
+      "in" : "header"
+    }
+  },
+  "definitions" : {
+    "User" : {
+      "type" : "object",
+      "properties" : {
+        "Id" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "Civilite" : {
+          "type" : "string"
+        },
+        "Prenom" : {
+          "type" : "string"
+        },
+        "Nom" : {
+          "type" : "string"
+        },
+        "DateNaissance" : {
+          "type" : "string"
+        },
+        "Adresse" : {
+          "type" : "string"
+        }
+      },
+      "xml" : {
+        "name" : "User"
+      },
+      "example" : {
+        "Prenom" : "Prenom",
+        "Adresse" : "Adresse",
+        "Civilite" : "Civilite",
+        "DateNaissance" : "DateNaissance",
+        "Id" : 0,
+        "Nom" : "Nom"
+      }
+    },
+    "inline_response_200" : {
+      "type" : "object",
+      "properties" : {
+        "AccountNumber" : {
+          "type" : "integer",
+          "description" : "Numéro du compte utilisateur."
+        },
+        "CodePin" : {
+          "type" : "integer",
+          "description" : "Code pin qui servira de mot de passe."
+        }
+      },
+      "example" : {
+        "CodePin" : 6,
+        "AccountNumber" : 0
+      }
+    }
+  }
+}
